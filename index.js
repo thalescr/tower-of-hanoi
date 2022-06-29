@@ -12,7 +12,84 @@ $(document).ready(function() {
   $scorePanel = $canves.find('#score-panel'),
   $movesCount = $scorePanel.find('#moves-num'),
   $ratingStars = $scorePanel.find('i'),
-  rating = 3;
+  rating = 3
+  startedTime = null,
+  statistics = null;
+
+  function setStatistics(sendToServer) {
+    localStorage.setItem('statistics', JSON.stringify(statistics));
+  }
+
+  function getStatistics() {
+    var rawStats = localStorage.getItem('statistics');
+    if (rawStats) {
+      try {
+        statistics = JSON.parse(rawStats);
+        return statistics;
+      } catch { }
+    }
+    statistics = {
+      name: '',
+      gender: '',
+      time: 0,
+      moves: 0,
+      finished: false
+    };
+    getUserData();
+    return statistics;
+  }
+
+  function getUserData() {
+    swal({
+      text: 'Seu nome:',
+      content: "input",
+      button: {
+        text: 'Próximo',
+        closeModal: false
+      }
+    })
+    .then(function (name) {
+      statistics.name = name;
+      swal({
+        text: 'Sexo:',
+        buttons: {
+          male: {
+            text: 'Masculino',
+            value: 'M'
+          },
+          female: {
+            text: 'Feminino',
+            value: 'F'
+          }
+        }
+      })
+      .then(function (gender) {
+        statistics.gender = gender;
+        swal({
+          title: 'Bom jogo!',
+          buttons: {
+            start: {
+              text: 'Iniciar!',
+              value: true
+            }
+          }
+        })
+        .then(function () {
+          startedTime = new Date();
+          setStatistics();
+        });
+      });
+    })
+    .catch(function (err) {
+      if (err) {
+        console.log(err);
+        swal("Erro!", "Houve um erro ao enviar sua resposta!", "error");
+      } else {
+        swal.stopLoading();
+        swal.close();
+      }
+    });
+  }
 
   // Set Rating and final Score
   function setRating(moves) {
@@ -31,6 +108,8 @@ $(document).ready(function() {
 
   // Init Game
   function initGame(tower) {
+    getStatistics();
+
     $tower.html('');
     moves = 0;
     $movesCount.html(0);
@@ -47,6 +126,9 @@ $(document).ready(function() {
   function countMove() {
     moves++;
     $movesCount.html(moves);
+    statistics.moves = moves;
+    statistics.time = new Date() - startedTime;
+    setStatistics(false);
 
     if (moves > minMoves - 1) {
       if ($tower.eq(1).children().length === disksNum || $tower.eq(2).children().length === disksNum) {

@@ -31,5 +31,20 @@
     <ul id="tower-2" class="tower"></ul>
     <ul id="tower-3" class="tower"></ul>
   </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.4/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js";
+    var firebaseConfig = {
+      apiKey: "AIzaSyBLX0et0RmxWhPQgOPAOijcglSIVzWparE",
+      authDomain: "tower-of-hanoi-e1075.firebaseapp.com",
+      projectId: "tower-of-hanoi-e1075",
+      storageBucket: "tower-of-hanoi-e1075.appspot.com",
+      messagingSenderId: "682111683740",
+      appId: "1:682111683740:web:a69a4304d6de07b4573159"
+    };
+    var app = initializeApp(firebaseConfig);
+    var db = getFirestore(app);
+  </script>
 </body>
 </html>
