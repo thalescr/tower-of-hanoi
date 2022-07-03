@@ -42,7 +42,7 @@ $(document).ready(function() {
   function getUserData() {
     swal({
       text: 'Seu nome:',
-      content: "input",
+      content: 'input',
       button: {
         text: 'Próximo',
         closeModal: false
@@ -83,7 +83,7 @@ $(document).ready(function() {
     .catch(function (err) {
       if (err) {
         console.log(err);
-        swal("Erro!", "Houve um erro ao enviar sua resposta!", "error");
+        swal('Erro!', 'Houve um erro ao enviar sua resposta!', 'error');
       } else {
         swal.stopLoading();
         swal.close();
@@ -135,8 +135,8 @@ $(document).ready(function() {
         swal({
           allowEscapeKey: false,
           allowOutsideClick: false,
-          title: 'Parabens! Você conseguiu!',
-          text: "🚀🎉🚀🎉",
+          title: 'Parabens! Montou em ' + moves + ' movimentos',
+          text: '🚀🎉🚀🎉',
           type: 'success',
           confirmButtonColor: '#8bc34a',
           confirmButtonText: 'Jogar novamente!'
@@ -184,7 +184,7 @@ $(document).ready(function() {
       allowEscapeKey: false,
       allowOutsideClick: false,
       title: 'Tem certeza?',
-      text: "O seu progresso será perdido!",
+      text: 'O seu progresso será perdido!',
       type: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#8bc34a',
