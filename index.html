@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="./index.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js" integrity="sha512-AA1Bzp5Q0K1KanKKmvN/4d3IRKVlv9PYgwFPvm32nPO6QS8yH1HO7LbgB1pgiOxPtfeg5zEn2ba64MUcqJx6CA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="./index.js"></script>
 </head>
 <body>
   <div id="canves">
@@ -17,9 +16,6 @@
     </div>
     <div class="curtain"></div>
     <ul id="score-panel">
-      <li>☆</li>
-      <li>☆</li>
-      <li>☆</li>
       <li>
         <h1>
           <span id="moves-num"></span>
@@ -32,19 +28,15 @@
     <ul id="tower-3" class="tower"></ul>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.4/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js";
-    var firebaseConfig = {
-      apiKey: "AIzaSyBLX0et0RmxWhPQgOPAOijcglSIVzWparE",
-      authDomain: "tower-of-hanoi-e1075.firebaseapp.com",
-      projectId: "tower-of-hanoi-e1075",
-      storageBucket: "tower-of-hanoi-e1075.appspot.com",
-      messagingSenderId: "682111683740",
-      appId: "1:682111683740:web:a69a4304d6de07b4573159"
-    };
-    var app = initializeApp(firebaseConfig);
-    var db = getFirestore(app);
+  <script type="module" src="https://thalescr.github.io/tower-of-hanoi/index.js"></script>
+  <!-- <script type="module" src="http://127.0.0.1:5500/index.js"></script> -->
+
+  <script>
+      function r() {
+        localStorage.removeItem('statistics');
+        localStorage.removeItem('suid');
+        return 'reset';
+      }
   </script>
 </body>
 </html>

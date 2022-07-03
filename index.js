@@ -1,7 +1,7 @@
-// Alert box using SweetAlert2 - https://limonte.github.io/sweetalert2
-$(document).ready(function() {
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.4/firebase-app.js";
+import { getFirestore, collection, addDoc, setDoc, doc } from "https://www.gstatic.com/firebasejs/9.8.4/firebase-firestore.js";
 
-  // Variables
+$(document).ready(function() {
   var holding = [],
   moves,
   disksNum = 7,
@@ -11,13 +11,42 @@ $(document).ready(function() {
   $tower = $canves.find('.tower'),
   $scorePanel = $canves.find('#score-panel'),
   $movesCount = $scorePanel.find('#moves-num'),
-  $ratingStars = $scorePanel.find('i'),
-  rating = 3
-  startedTime = null,
   statistics = null;
+
+  var uploadDocument = loadFirestore();
+
+  function loadFirestore() {
+    var firebaseConfig = {
+      apiKey: "AIzaSyBLX0et0RmxWhPQgOPAOijcglSIVzWparE",
+      authDomain: "tower-of-hanoi-e1075.firebaseapp.com",
+      projectId: "tower-of-hanoi-e1075",
+      storageBucket: "tower-of-hanoi-e1075.appspot.com",
+      messagingSenderId: "682111683740",
+      appId: "1:682111683740:web:a69a4304d6de07b4573159"
+    };
+    var app = initializeApp(firebaseConfig);
+    var db = getFirestore(app);
+    var statsCollection = collection(db, 'statistics');
+
+    return function (value) {
+      var statisticsUid = localStorage.getItem('suid');
+      if (!statisticsUid) {
+        return addDoc(statsCollection, value)
+          .then(function (response) {
+            localStorage.setItem('suid', response.id);
+            return response;
+          });
+      }
+      return setDoc(doc(db, 'statistics', statisticsUid), value);
+    };
+  }
 
   function setStatistics(sendToServer) {
     localStorage.setItem('statistics', JSON.stringify(statistics));
+
+    if (sendToServer) {
+      uploadDocument(statistics);
+    }
   }
 
   function getStatistics() {
@@ -33,6 +62,7 @@ $(document).ready(function() {
       gender: '',
       time: 0,
       moves: 0,
+      startedTime: new Date(),
       finished: false
     };
     getUserData();
@@ -73,10 +103,6 @@ $(document).ready(function() {
               value: true
             }
           }
-        })
-        .then(function () {
-          startedTime = new Date();
-          setStatistics();
         });
       });
     })
@@ -91,24 +117,12 @@ $(document).ready(function() {
     });
   }
 
-  // Set Rating and final Score
-  function setRating(moves) {
-    if (moves === 127) {
-      $ratingStars.eq(2).removeClass('fa-star').addClass('fa-star-o');
-      rating = 2;
-    } else if (moves >= 128 && moves <= 228) {
-      $ratingStars.eq(1).removeClass('fa-star').addClass('fa-star-o');
-      rating = 1;
-    } else if (moves >= 229) {
-      $ratingStars.eq(0).removeClass('fa-star').addClass('fa-star-o');
-      rating = 0;
-    }	
-    return { score: rating };
-  };
-
-  // Init Game
   function initGame(tower) {
     getStatistics();
+
+    if (!statistics.finished) {
+      statistics.startedTime = new Date();
+    }
 
     $tower.html('');
     moves = 0;
@@ -117,21 +131,23 @@ $(document).ready(function() {
     for (var i = 1; i <= disksNum; i++) {
       tower.prepend($('<li class="disk disk-' + i + '" data-value="' + i + '"></li>'));
     }
-    $ratingStars.each(function() {
-      $(this).removeClass('fa-star-o').addClass('fa-star');
-    });
   }
 
-  // Game Logic
   function countMove() {
     moves++;
     $movesCount.html(moves);
-    statistics.moves = moves;
-    statistics.time = new Date() - startedTime;
-    setStatistics(false);
+    if (!statistics.finished) {
+      var elapsedTime = (new Date() - statistics.startedTime) / 1000;
+      var willSendToServer = (moves % 30 === 0) || (statistics.time - elapsedTime > 60);
+      statistics.moves = moves;
+      statistics.time = elapsedTime;
+      setStatistics(willSendToServer);
+    }
 
     if (moves > minMoves - 1) {
       if ($tower.eq(1).children().length === disksNum || $tower.eq(2).children().length === disksNum) {
+        statistics.finished = true;
+        setStatistics(true);
         swal({
           allowEscapeKey: false,
           allowOutsideClick: false,
@@ -147,8 +163,6 @@ $(document).ready(function() {
         })
       }
     }
-
-    setRating(moves);
   }
 
   function tower(tower) {
@@ -173,7 +187,6 @@ $(document).ready(function() {
 
   initGame($tower.eq(0));
 
-  // Event Handlers
   $canves.on('click', '.tower', function() {
     var $this = $(this);
     tower($this);
