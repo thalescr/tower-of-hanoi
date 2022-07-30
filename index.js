@@ -72,6 +72,8 @@ $(document).ready(function() {
   function getUserData() {
     swal({
       text: 'Seu nome:',
+      closeOnClickOutside: false,
+      backdrop: true,
       content: 'input',
       button: {
         text: 'Próximo',
@@ -82,6 +84,8 @@ $(document).ready(function() {
       statistics.name = name;
       swal({
         text: 'Sexo:',
+        closeOnClickOutside: false,
+        backdrop: true,
         buttons: {
           male: {
             text: 'Masculino',
@@ -149,8 +153,8 @@ $(document).ready(function() {
         statistics.finished = true;
         setStatistics(true);
         swal({
-          allowEscapeKey: false,
-          allowOutsideClick: false,
+          closeOnClickOutside: false,
+          backdrop: true,
           title: 'Parabens! Montou em ' + moves + ' movimentos',
           text: '🚀🎉🚀🎉',
           type: 'success',
