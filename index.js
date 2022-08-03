@@ -4,8 +4,8 @@ import { getFirestore, collection, addDoc, setDoc, doc } from "https://www.gstat
 $(document).ready(function() {
   var holding = [],
   moves,
-  disksNum = 7,
-  minMoves = 127,
+  disksNum = 6,
+  minMoves = 63,
   $canves = $('#canves'),
   $restart = $canves.find('.restart'),
   $tower = $canves.find('.tower'),
