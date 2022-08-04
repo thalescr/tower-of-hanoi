@@ -1,17 +1,18 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.4/firebase-app.js";
-import { getFirestore, collection, addDoc, setDoc, doc } from "https://www.gstatic.com/firebasejs/9.8.4/firebase-firestore.js";
+import { getFirestore, collection, addDoc, setDoc, getDoc, doc } from "https://www.gstatic.com/firebasejs/9.8.4/firebase-firestore.js";
 
 $(document).ready(function() {
   var holding = [],
-  moves,
-  disksNum = 6,
-  minMoves = 63,
-  $canves = $('#canves'),
-  $restart = $canves.find('.restart'),
-  $tower = $canves.find('.tower'),
-  $scorePanel = $canves.find('#score-panel'),
-  $movesCount = $scorePanel.find('#moves-num'),
-  statistics = null;
+    db,
+    moves,
+    disksNum = 6,
+    minMoves = 63,
+    $canves = $('#canves'),
+    $restart = $canves.find('.restart'),
+    $tower = $canves.find('.tower'),
+    $scorePanel = $canves.find('#score-panel'),
+    $movesCount = $scorePanel.find('#moves-num'),
+    statistics = null;
 
   var uploadDocument = loadFirestore();
 
@@ -25,7 +26,7 @@ $(document).ready(function() {
       appId: "1:682111683740:web:a69a4304d6de07b4573159"
     };
     var app = initializeApp(firebaseConfig);
-    var db = getFirestore(app);
+    db = getFirestore(app);
     var statsCollection = collection(db, 'statistics');
 
     return function (value) {
@@ -50,23 +51,48 @@ $(document).ready(function() {
   }
 
   function getStatistics() {
-    var rawStats = localStorage.getItem('statistics');
-    if (rawStats) {
-      try {
-        statistics = JSON.parse(rawStats);
-        return statistics;
-      } catch { }
+    var suid = localStorage.getItem('suid');
+    if (suid) {
+      return getDoc(doc(db, 'statistics', suid))
+        .then(function (response) {
+          statistics = response.data();
+
+          if (statistics) {
+            localStorage.setItem('statistics', JSON.stringify(statistics));
+            return statistics;
+          } else {
+            statistics = {
+              name: '',
+              gender: '',
+              time: 0,
+              moves: 0,
+              startedTime: new Date(),
+              finished: false
+            };
+            getUserData();
+            return statistics;
+          }
+        });
+    } else {
+      var rawStats = localStorage.getItem('statistics');
+      if (rawStats) {
+        try {
+          statistics = JSON.parse(rawStats);
+          return new Promise(function (resolve) { resolve(statistics); });
+        } catch { }
+      }
+
+      statistics = {
+        name: '',
+        gender: '',
+        time: 0,
+        moves: 0,
+        startedTime: new Date(),
+        finished: false
+      };
+      getUserData();
+      return new Promise(function (resolve) { resolve(statistics); });
     }
-    statistics = {
-      name: '',
-      gender: '',
-      time: 0,
-      moves: 0,
-      startedTime: new Date(),
-      finished: false
-    };
-    getUserData();
-    return statistics;
   }
 
   function getUserData() {
@@ -122,19 +148,19 @@ $(document).ready(function() {
   }
 
   function initGame(tower) {
-    getStatistics();
+    getStatistics().then(function () {
+      if (!statistics.finished) {
+        statistics.startedTime = new Date();
+      }
 
-    if (!statistics.finished) {
-      statistics.startedTime = new Date();
-    }
-
-    $tower.html('');
-    moves = 0;
-    $movesCount.html(0);
-    holding = [];
-    for (var i = 1; i <= disksNum; i++) {
-      tower.prepend($('<li class="disk disk-' + i + '" data-value="' + i + '"></li>'));
-    }
+      $tower.html('');
+      moves = 0;
+      $movesCount.html(0);
+      holding = [];
+      for (var i = 1; i <= disksNum; i++) {
+        tower.prepend($('<li class="disk disk-' + i + '" data-value="' + i + '"></li>'));
+      }
+    });
   }
 
   function countMove() {
@@ -142,7 +168,7 @@ $(document).ready(function() {
     $movesCount.html(moves);
     if (!statistics.finished) {
       var elapsedTime = (new Date() - statistics.startedTime) / 1000;
-      var willSendToServer = (moves % 30 === 0) || (statistics.time - elapsedTime > 60);
+      var willSendToServer = (moves % 20 === 0 || moves === 1) || (statistics.time - elapsedTime > 30);
       statistics.moves = moves;
       statistics.time = elapsedTime;
       setStatistics(willSendToServer);
