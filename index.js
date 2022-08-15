@@ -51,48 +51,24 @@ $(document).ready(function() {
   }
 
   function getStatistics() {
-    var suid = localStorage.getItem('suid');
-    if (suid) {
-      return getDoc(doc(db, 'statistics', suid))
-        .then(function (response) {
-          statistics = response.data();
-
-          if (statistics) {
-            localStorage.setItem('statistics', JSON.stringify(statistics));
-            return statistics;
-          } else {
-            statistics = {
-              name: '',
-              gender: '',
-              time: 0,
-              moves: 0,
-              startedTime: new Date(),
-              finished: false
-            };
-            getUserData();
-            return statistics;
-          }
-        });
-    } else {
-      var rawStats = localStorage.getItem('statistics');
-      if (rawStats) {
-        try {
-          statistics = JSON.parse(rawStats);
-          return new Promise(function (resolve) { resolve(statistics); });
-        } catch { }
-      }
-
-      statistics = {
-        name: '',
-        gender: '',
-        time: 0,
-        moves: 0,
-        startedTime: new Date(),
-        finished: false
-      };
-      getUserData();
-      return new Promise(function (resolve) { resolve(statistics); });
+    var rawStats = localStorage.getItem('statistics');
+    if (rawStats) {
+      try {
+        statistics = JSON.parse(rawStats);
+        return new Promise(function (resolve) { resolve(statistics); });
+      } catch { }
     }
+
+    statistics = {
+      name: '',
+      gender: '',
+      time: 0,
+      moves: 0,
+      startedTime: new Date(),
+      finished: false
+    };
+    getUserData();
+    return new Promise(function (resolve) { resolve(statistics); });
   }
 
   function getUserData() {
