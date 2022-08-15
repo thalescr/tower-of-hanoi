@@ -1,5 +1,5 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.4/firebase-app.js";
-import { getFirestore, collection, addDoc, setDoc, getDoc, doc } from "https://www.gstatic.com/firebasejs/9.8.4/firebase-firestore.js";
+// import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.4/firebase-app.js";
+// import { getFirestore, collection, addDoc, setDoc, getDoc, doc } from "https://www.gstatic.com/firebasejs/9.8.4/firebase-firestore.js";
 
 $(document).ready(function() {
   var holding = [],
@@ -14,40 +14,40 @@ $(document).ready(function() {
     $movesCount = $scorePanel.find('#moves-num'),
     statistics = null;
 
-  var uploadDocument = loadFirestore();
+  // var uploadDocument = loadFirestore();
 
-  function loadFirestore() {
-    var firebaseConfig = {
-      apiKey: "AIzaSyBLX0et0RmxWhPQgOPAOijcglSIVzWparE",
-      authDomain: "tower-of-hanoi-e1075.firebaseapp.com",
-      projectId: "tower-of-hanoi-e1075",
-      storageBucket: "tower-of-hanoi-e1075.appspot.com",
-      messagingSenderId: "682111683740",
-      appId: "1:682111683740:web:a69a4304d6de07b4573159"
-    };
-    var app = initializeApp(firebaseConfig);
-    db = getFirestore(app);
-    var statsCollection = collection(db, 'statistics');
+  // function loadFirestore() {
+  //   var firebaseConfig = {
+  //     apiKey: "apiKey",
+  //     authDomain: "auth-domain.firebaseapp.com",
+  //     projectId: "project-id",
+  //     storageBucket: "storage-bucket.appspot.com",
+  //     messagingSenderId: "messagingSenderId",
+  //     appId: "appId"
+  //   };
+  //   var app = initializeApp(firebaseConfig);
+  //   db = getFirestore(app);
+  //   var statsCollection = collection(db, 'statistics');
 
-    return function (value) {
-      var statisticsUid = localStorage.getItem('suid');
-      if (!statisticsUid) {
-        return addDoc(statsCollection, value)
-          .then(function (response) {
-            localStorage.setItem('suid', response.id);
-            return response;
-          });
-      }
-      return setDoc(doc(db, 'statistics', statisticsUid), value);
-    };
-  }
+  //   return function (value) {
+  //     var statisticsUid = localStorage.getItem('suid');
+  //     if (!statisticsUid) {
+  //       return addDoc(statsCollection, value)
+  //         .then(function (response) {
+  //           localStorage.setItem('suid', response.id);
+  //           return response;
+  //         });
+  //     }
+  //     return setDoc(doc(db, 'statistics', statisticsUid), value);
+  //   };
+  // }
 
-  function setStatistics(sendToServer) {
+  function setStatistics() {
     localStorage.setItem('statistics', JSON.stringify(statistics));
 
-    if (sendToServer) {
-      uploadDocument(statistics);
-    }
+    // if (sendToServer) {
+    //   uploadDocument(statistics);
+    // }
   }
 
   function getStatistics() {
@@ -168,16 +168,16 @@ $(document).ready(function() {
     $movesCount.html(moves);
     if (!statistics.finished) {
       var elapsedTime = (new Date() - statistics.startedTime) / 1000;
-      var willSendToServer = (moves % 20 === 0 || moves === 1) || (statistics.time - elapsedTime > 30);
+      // var willSendToServer = (moves % 20 === 0 || moves === 1) || (statistics.time - elapsedTime > 30);
       statistics.moves = moves;
       statistics.time = elapsedTime;
-      setStatistics(willSendToServer);
+      setStatistics();
     }
 
     if (moves > minMoves - 1) {
       if ($tower.eq(1).children().length === disksNum || $tower.eq(2).children().length === disksNum) {
         statistics.finished = true;
-        setStatistics(true);
+        setStatistics();
         swal({
           closeOnClickOutside: false,
           backdrop: true,

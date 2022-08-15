@@ -30,22 +30,5 @@
 
   <script type="module" src="https://thalescr.github.io/tower-of-hanoi/index.js"></script>
   <!-- <script type="module" src="http://127.0.0.1:5500/index.js"></script> -->
-
-  <script src="https://thalescr.github.io/tower-of-hanoi/download.js"></script>
-  <!-- <script src="http://127.0.0.1:5500/download.js"></script> -->
-
-  <script>
-      function reset() {
-        localStorage.removeItem('statistics');
-        localStorage.removeItem('suid');
-        return 'reset';
-      }
-
-      function e() {
-        var statistics = localStorage.getItem('statistics');
-        var suid = localStorage.getItem('suid');
-        download(statistics, `statistics_${suid}.json`, 'text/json');
-      }
-  </script>
 </body>
 </html>
